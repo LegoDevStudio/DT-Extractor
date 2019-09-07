@@ -35,6 +35,7 @@ module.exports = class extends Command {
         let start = Date.now().toString();
         db.query("INSERT INTO `cases`(`user`, `issuer`, `type`, `reason`, `duration`, `start`, `active`) VALUES (?,?,?,?,?,?,?)", [user.id,m.author.id,2,reason,0,start,true], function(error,results,tables) {
             if(error) {
+                m.reply("Failed to execute database change. User has not been punished.");
                 return console.error("Failed to INSERT user id "+user.id+" INTO cases TABLE: "+error);
             }
             db.query("SELECT `caseid` FROM `cases` WHERE `user`=? AND `start`=?", [user.id, start], function(error,results,tables) {
