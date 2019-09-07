@@ -26,6 +26,7 @@ module.exports = class extends Command {
                     m.reply("Adding autoresponse...");
                     db.query("INSERT INTO `responces`(`msg`, `response`) VALUES (?,?)", [trigger,msg.content], function(error,results,fields) {
                         if(error) {
+                            m.reply("Failed to add autoresponse.");
                             return console.error("Failed to INSERT autoresponse: "+error);
                         }
                         m.reply("Successfully added `"+trigger+"` as an autorespose. Try it out!");
@@ -38,6 +39,7 @@ module.exports = class extends Command {
             }
             db.query("DELETE FROM `responces` WHERE `msg`=?", [args.splice(1).join(" ")], function(error,results,fields) {
                 if(error) {
+                    m.reply("Failed to delete autoresponse.");
                     return console.error("Failed to DELETE autoresponse: "+error);
                 }
                 m.reply("Deleted autoresponse.");
