@@ -75,6 +75,7 @@ module.exports = class extends Command {
         user.send("***__Channel Locked__***\n**Staff have left the following message**\n*"+reason+"*").then(msg => {
             db.query("INSERT INTO `channels`(`id`, `reason`, `initiator`, `duration`, `start`, `msg`, `guild`) VALUES (?,?,?,?,?,?,?)", [user.id,reason,m.author.id,time,start,msg.id,m.guild.id], function(error,results,tables) {
                 if(error) {
+                    m.reply("Database error occured. Unable to lock.");
                     return console.error("Failed to INSERT user id "+user.id+" INTO cases TABLE: "+error);
                 }
                 let length = timeRaw +" "+timeMeasure;
