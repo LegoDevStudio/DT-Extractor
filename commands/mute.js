@@ -81,6 +81,7 @@ module.exports = class extends Command {
         let start = Date.now().toString();
         db.query("INSERT INTO `cases`(`user`, `issuer`, `type`, `reason`, `duration`, `start`, `active`) VALUES (?,?,?,?,?,?,?)", [user.id,m.author.id,1,reason,time,start,true], function(error,results,tables) {
             if(error) {
+                m.reply("Failed to execute database change. User has not been punished.");
                 return console.error("Failed to INSERT user id "+user.id+" INTO cases TABLE: "+error);
             }
             let length = timeRaw +" "+timeMeasure;
@@ -117,15 +118,16 @@ module.exports = class extends Command {
                         },
                     ]
                 };
-                user.addRole(global.config.mutedrole,reason);
-                m.guild.channels.get(global.config.punishchannel).send({embed:embed})
                 db.query("INSERT INTO `mutes`(`id`, `issuer`, `reason`, `duration`, `start`, `caseid`) VALUES (?,?,?,?,?,?)", [user.id,m.author.id,reason,time,start,results[0].caseid], function(error,results,tables) {
                     if(error) {
+                        m.reply("Failed to execute database change. User has not been punished.");
                         return console.error("Failed to INSERT user id "+user.id+" INTO mutes TABLE: "+error);
                     }
+                    user.addRole(global.config.mutedrole,reason);
+                    m.guild.channels.get(global.config.punishchannel).send({embed:embed})
+                    m.reply("Muted user.");
+                    Client.emit("modCommandExecuted", (m.content,m.member));
                 });
-                m.reply("Muted user.");
-                Client.emit("modCommandExecuted", (m.content,m.member));
             });
         });
     }
