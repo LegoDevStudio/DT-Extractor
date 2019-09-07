@@ -24,11 +24,12 @@ module.exports = class extends Command {
         let start = Date.now().toString();
         db.query("SELECT * FROM `channels` WHERE `id`=?",[user.id], function(error,results,fields) {
             Client.guilds.get(results[0].guild).channels.get(results[0].id).fetchMessage(results[0].msg).then(msg => {
-                msg.edit("***__Channel Unlocked__***\n**Channel lockdown is now over.**");
                 db.query("DELETE FROM `channels` WHERE `id`=?",[results[0].id],function(error,results,fields) {
                     if(error) {
+                        m.reply("Failed to unlock channel. Channel remains in LOCKED state.");
                         return console.error("Failed to unlock channel "+result.id+": "+error);
                     }
+                    msg.edit("***__Channel Unlocked__***\n**Channel lockdown is now over.**");
                     m.reply("Unlocked Channel");
                     Client.emit("modCommandExecuted", (m.content,m.member));
                 });
