@@ -24,7 +24,7 @@ module.exports = class extends Command {
             if(!isNaN(parseInt(args[0]))) {
                 db.query("SELECT * FROM `quotes` WHERE `id`=?",[parseInt(args[0])],function(error,results,fields) {
                     if(error) {
-                        m.reply("Failed to quote. SQL error occured.");
+                        m.reply("Failed to get quote. SQL error occured.");
                         return console.error("Failed to SELECT * FROM `quotes` WHERE `id`="+args[0]+": "+error);
                     }
                     let quote = results[0];
