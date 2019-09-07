@@ -16,7 +16,11 @@ module.exports = class extends Command {
         }
         db.query("SELECT * FROM `cases` WHERE `caseid`=?", [parseInt(args[0])], function(error,results,fields) {
             if(error) {
+                m.reply("Failed to select from database.");
                 return console.error("Failed to SELECT * from `cases` WHERE `caseid`="+args[0]+": "+error);
+            }
+            if(results[0] == undefined) {
+                return "Case doesn't exist.";
             }
             let type = "";
             if(results[0].type == 0) type = "Warn";
