@@ -31,7 +31,11 @@ module.exports = class extends Command {
         let start = Date.now().toString();
         db.query("SELECT `caseid` FROM `bans` WHERE `id`=?", [user.id], function(error,results,tables) {
             if(error) {
+                m.reply("Failed to call database. User cannot be unbanned.");
                 return console.error("Failed to SELECT `caseid` from user id "+user.id+": "+error);
+            }
+            if(results[0] == undefined) {
+                m.result("Ban doesn't exist in table. Maybe you unbanned from a different bot? Continuing...");
             }
             console.log(results);
             let embed = {
@@ -54,15 +58,16 @@ module.exports = class extends Command {
                     }
                 ]
             };
-            m.guild.unban(user.id);
-            m.guild.channels.get(global.config.punishchannel).send({embed:embed})
             db.query("DELETE FROM `bans` WHERE `caseid`=?", [results[0].caseid], function(error,results,tables) {
                 if(error) {
+                    m.reply("Failed to delete ban from database. Unable to ban.");
                     return console.error("Failed to DELETE user id "+user.id+" FROM bans TABLE: "+error);
                 }
+                m.guild.unban(user.id);
+                m.guild.channels.get(global.config.punishchannel).send({embed:embed})
+                m.reply("Unbanned user.");
+                Client.emit("modCommandExecuted", (m.content,m.member));
             });
-            m.reply("Unbanned user.");
-            Client.emit("modCommandExecuted", (m.content,m.member));
         });
     }
 }
