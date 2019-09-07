@@ -31,8 +31,10 @@ module.exports = class extends Command {
         let start = Date.now().toString();
         db.query("SELECT `caseid` FROM `mutes` WHERE `id`=?", [user.id], function(error,results,tables) {
             if(error) {
+                m.reply("Failed to access database.");
                 return console.error("Failed to SELECT `caseid` from user id "+user.id+": "+error);
             }
+            if(results[0] == undefined) m.reply("Unable to find user in database. Maybe muted from another bot?");
             console.log(results);
             let embed = {
                 "color": 261888,
@@ -58,11 +60,14 @@ module.exports = class extends Command {
             m.guild.channels.get(global.config.punishchannel).send({embed:embed})
             db.query("DELETE FROM `mutes` WHERE `caseid`=?", [results[0].caseid], function(error,results,tables) {
                 if(error) {
+                    m.reply("Failed to delete mute. Unable to unmute.");
                     return console.error("Failed to DELETE user id "+user.id+" FROM mutes TABLE: "+error);
                 }
+                user.removeRole(global.config.mutedrole,reason);
+                m.guild.channels.get(global.config.punishchannel).send({embed:embed})
+                m.reply("Unmuted user.");
+                Client.emit("modCommandExecuted", (m.content,m.member));
             });
-            m.reply("Unmuted user.");
-            Client.emit("modCommandExecuted", (m.content,m.member));
         });
     }
 }
