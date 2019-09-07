@@ -21,6 +21,7 @@ module.exports = class extends Command {
         }
         db.query("SELECT `caseid` FROM `cases` WHERE `user`=?", [user.id], function(error,results,fields) {
             if(error) {
+                m.reply("Unable to fetch case.");
                 return console.error("Failed to SELECT `caseid` from `cases` WHERE `user`="+user.id+": "+error);
             }
             let cases = "";
