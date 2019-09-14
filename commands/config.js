@@ -9,6 +9,7 @@ module.exports = class extends Command {
         this.permission = 2
         this.usage = "<set/list> [option] [value]";
         this.args = 1;
+        this.enabled = false
     }
     code(args,m) {
         if(args[0] == "list") {
