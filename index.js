@@ -1,6 +1,5 @@
 var Discord = require("discord.js");
 var mysql = require("mysql");
-global.config = require("./config/config.json");
 var fs = require("fs");
 
 const version = "1.0.0";
@@ -55,11 +54,6 @@ db.connect(function(err) {
     console.info("Successfully connected to database.");
     connected = true;
 });
-
-global.saveConfig = function() {
-    // Save bot''s config.
-    fs.writeFileSync("./config/config.json",JSON.stringify(global.config));
-}
 
 global.checkPerms = function (lvl,user){
     /*
@@ -125,6 +119,7 @@ Client.on("ready", () => {
         // Working as intended
         console.debug("Discord bot was launched and mysql connection ready.");
     }
+  
 
     global.db = db;
     global.Discord = Discord;
@@ -267,7 +262,7 @@ Client.on("guildMemberAdd", member => {
 
 Client.on("guildBanAdd", (guild,user) => {
     if(global.config.announcements.banmsg.enabled == true) {
-        guild.channels.get(global.config.announcements.channlid).send(formatMessage(global.config.announcements.banmsg.text.replace("${user}",user.username).replace("${server}",guild.name).replace("${@user}","<@"+user.id+">")));
+        guild.channels.get(global.config.announcements.channelid).send(formatMessage(global.config.announcements.banmsg.text.replace("${user}",user.username).replace("${server}",guild.name).replace("${@user}","<@"+user.id+">")));
     }
     if(global.config.actionlog.events.indexOf("Member Banned") != -1) {
         let colour = Math.floor(Math.random() * 16777214);
