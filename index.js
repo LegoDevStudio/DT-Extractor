@@ -120,6 +120,7 @@ Client.on("ready", () => {
         console.debug("Discord bot was launched and mysql connection ready.");
     }
   
+    require("./util/Radio");
 
     global.db = db;
     global.Discord = Discord;
@@ -774,7 +775,7 @@ Client.on("message", message => {
         // Custom Responces
         db.query("SELECT * FROM `responces`", function(error,results,fields) {
             results.forEach(result => {
-                if(message.content == result.msg) {
+                if(message.content.toLowerCase() == result.msg) {
                     /*
                         ${} allows you to have things that change depending on the message.
                         ${name.user} will output the username of the author.
