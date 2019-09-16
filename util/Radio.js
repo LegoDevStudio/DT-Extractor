@@ -60,8 +60,10 @@ async function music() {
           let song = Queue.shift();
           console.log(song);
           //const stream = ytdl(idToUrl(song));
-          Dispatcher = Connection.playOpusStream(await ytdld(idToUrl(song)));
+          Dispatcher = Connection.playStream(ytdl(idToUrl(song), { filter : 'audioonly' }), streamOptions);
+          //Dispatcher = Connection.playArbitraryInput('https://cdn.glitch.com/29710454-c8ff-4cb6-ac58-7fe9acf1a470%2FChicken%20Nuggets?v=1568661003257');
           //Dispatcher = Connection.playStream(stream, streamOptions);
+          //Dispatcher = Connection.playFile(__dirname+"/chicken_nugget.mp3");
           Dispatcher.on("start", () => {
             console.log("playing radio id "+song);
           });
