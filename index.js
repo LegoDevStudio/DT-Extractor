@@ -299,6 +299,12 @@ Client.on("messageUpdate", (oldm,newm) => {
         if(global.config.actionlog.ignored.indexOf(oldm.channel.name) != -1) return;
         if(oldm.content == newm.content) return;
         let colour = Math.floor(Math.random() * 16777214);
+        if(oldm.content.split("").length >= 1014) {
+            oldm.content = oldm.content.split("").splice(1011).join("")+"...";
+        }
+        if(newm.content.split("").length >= 1014) {
+            newm.content = newm.content.split("").splice(1011).join("")+"...";
+        }
         const embed = {
             "description":"<#"+newm.channel.id+"> [Jump To Message]("+newm.url+")",
             "color": colour,
@@ -326,6 +332,9 @@ Client.on("messageDelete", (m) => {
     if(global.config.actionlog.events.indexOf("Message Deleted") != -1) {
         if(global.config.actionlog.ignored.indexOf(m.channel.name) != -1) return;
         let colour = Math.floor(Math.random() * 16777214);
+        if(m.content.split("").length >= 1014) {
+            m.content = m.content.split("").splice(1011).join("")+"...";
+        }
         const embed = {
             "description": "<#"+m.channel.id+">",
             "color": colour,
