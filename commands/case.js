@@ -58,6 +58,9 @@ module.exports = class extends Command {
                 ]
             };
             m.reply({ embed:embed });
+            if(results[0].active == 0) {
+              m.channel.send("Notice: This warn is no longer active."); 
+            }
         });
     }
 }

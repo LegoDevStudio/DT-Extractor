@@ -1,7 +1,7 @@
 const ytdl = require('ytdl-core');
 const YouTube = require("simple-youtube-api");
 var streamOptions = { seek: 0, volume: 1, passes: 1 };
-var youtube = new YouTube("AIzaSyC7qosqO9qOZkBP6_r7DnKbJCk92gHAaOg");
+var youtube = new YouTube(process.env.YOUTUBE);
 const ytdld = require('ytdl-core-discord');
 
 
@@ -60,7 +60,7 @@ async function music() {
           let song = Queue.shift();
           console.log(song);
           //const stream = ytdl(idToUrl(song));
-          Dispatcher = Connection.playStream(ytdl(idToUrl(song), { filter : 'audioonly' }), streamOptions);
+          Dispatcher = Connection.playOpusStream(await ytdld(idToUrl(song), { filter : 'audioonly' }), streamOptions);
           //Dispatcher = Connection.playArbitraryInput('https://cdn.glitch.com/29710454-c8ff-4cb6-ac58-7fe9acf1a470%2FChicken%20Nuggets?v=1568661003257');
           //Dispatcher = Connection.playStream(stream, streamOptions);
           //Dispatcher = Connection.playFile(__dirname+"/chicken_nugget.mp3");
@@ -70,14 +70,13 @@ async function music() {
           Dispatcher.on("end", reason => {
             console.log(reason);
              setTimeout(() => {
-               Dispatcher.end();
+                Dispatcher = null;
                 console.log("B")
-                if(Queue.length==0) {return endMusic()}
-                music();
+                setTimeout(() => {
+                  if(Queue.length==0) {return endMusic()}
+                  music();
+                },2000);
                 //Dispatcher.end();
              },((song.length*1000)-Dispatcher.totalStreamTime));
-          });
-          Dispatcher.on("error", data => {
-            console.error(data)
           });
 }
