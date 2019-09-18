@@ -12,7 +12,7 @@ var Client = new Discord.Client();
 var db = mysql.createConnection({
     host     : '54.37.204.19',
     user     : 'u5423_83DUIpXE7u',
-    password : 'g2l8kbnFZmBjalEMjmOGCxHU',
+    password : process.env.DB_KEY,
     database : 's5423_theCore'
 });
 
@@ -42,7 +42,7 @@ var connected = false;
 //Connect to database.
 db.connect(function(err) {
     // Log into discord
-    Client.login("NjA5Mjk2NTQ2MzE5Njk1ODcy.XU0pqQ.7h445GunAkbre4GbcBJw499pm1I");
+    Client.login(process.env.DISCORD);
     //rbxasset://textures/particles/sparkles_main.dds
     if (err) {
       // If we couldn't connect send critical log and disable mysql connection compatibility
@@ -120,7 +120,7 @@ Client.on("ready", () => {
         console.debug("Discord bot was launched and mysql connection ready.");
     }
   
-    require("./util/Radio");
+    //require("./util/Radio");
 
     global.db = db;
     global.Discord = Discord;
