@@ -2,7 +2,7 @@ var Discord = require("discord.js");
 var mysql = require("mysql");
 var fs = require("fs");
 
-const version = "1.0.0";
+const version = "1.1.0";
 const prefix = ".?";
 global.version = version;
 global.prefix = prefix;
@@ -781,7 +781,7 @@ Client.on("message", message => {
                     file.execute(args,message).catch(err => {
                         if(err.code == 1) return;
                         if(err.code == 2) {
-                            return message.reply("An error was thrown when executing the command:\n```json\n"+JSON.stringify(err)+"\n```");
+                            return message.reply("An error was thrown when executing the command:\n```\n"+err.message+"\n```");
                         }
                         if(err.code == 3) {
                             return message.reply("Invalid Usage. Usage: ?"+command.toLowerCase()+" "+err.message);
