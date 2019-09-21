@@ -2,7 +2,7 @@ var Discord = require("discord.js");
 var mysql = require("mysql");
 var fs = require("fs");
 
-const version = "1.1.0";
+const version = "1.0.0";
 const prefix = ".?";
 global.version = version;
 global.prefix = prefix;
@@ -43,6 +43,7 @@ var connected = false;
 db.connect(function(err) {
     // Log into discord
     Client.login(process.env.DISCORD);
+    //rbxasset://textures/particles/sparkles_main.dds
     if (err) {
       // If we couldn't connect send critical log and disable mysql connection compatibility
       console.critical('Failed to connect to database: ' + err.stack);
@@ -52,20 +53,6 @@ db.connect(function(err) {
     // Got a connection and enabled mysql connection compatibility
     console.info("Successfully connected to database.");
     connected = true;
-    global.queryDb = function (cmd,data) {
-        return new Promise((res,rej) => {
-            if(typeof data == "string") {
-                data = [data];
-            }
-            db.query(cmd, data, function(error,results,tables) { 
-                if(error) {
-                    rej(error);
-                }else{
-                    res(results,tables);
-                }
-            });
-        });
-    }
 });
 
 global.checkPerms = function (lvl,user){
@@ -781,7 +768,7 @@ Client.on("message", message => {
                     file.execute(args,message).catch(err => {
                         if(err.code == 1) return;
                         if(err.code == 2) {
-                            return message.reply("An error was thrown when executing the command:\n```\n"+err.message+"\n```");
+                            return message.reply("An error was thrown when executing the command:\n```json\n"+JSON.stringify(err)+"\n```");
                         }
                         if(err.code == 3) {
                             return message.reply("Invalid Usage. Usage: ?"+command.toLowerCase()+" "+err.message);

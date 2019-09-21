@@ -1,6 +1,6 @@
 dependencies:
   body-parser: 1.19.0
-  discord.js: 11.5.1
+  discord.js: github.com/discordjs/discord.js/d05334fd3cd8fb913e869654f25eb8230493de11
   express: 4.17.1
   mysql: 2.17.1
   node-opus: 0.3.2
@@ -10,6 +10,18 @@ dependencies:
   ytdl-core: 0.29.7
   ytdl-core-discord: 1.0.3
 packages:
+  /@discordjs/collection/0.1.3:
+    dev: false
+    resolution:
+      integrity: sha512-4ek19SmNcPI92942RkuBrZrBK8hg7nG+ae/skkNNDeOaUG+XvxTPkv/jPZVgXwVPDkU5EFsewsI+0n4dTwFvgA==
+  /abort-controller/3.0.0:
+    dependencies:
+      event-target-shim: 5.0.1
+    dev: false
+    engines:
+      node: '>=6.5'
+    resolution:
+      integrity: sha512-h8lQ8tacZYnR3vNQTgibj+tODHI5/+l06Au2Pcriv/Gmet0eaj4TwWH41sO9wnHDiQsEj19q0drzdWdeAHtweg==
   /accepts/1.3.7:
     dependencies:
       mime-types: 2.1.24
@@ -145,26 +157,6 @@ packages:
     dev: false
     resolution:
       integrity: sha1-l4hXRCxEdJ5CBmE+N5RiBYJqvYA=
-  /discord.js/11.5.1:
-    dependencies:
-      long: 4.0.0
-      prism-media: 0.0.3
-      snekfetch: 3.6.4
-      tweetnacl: 1.0.1
-      ws: 6.2.1
-    dev: false
-    engines:
-      node: '>=6.0.0'
-    peerDependencies:
-      '@discordjs/uws': ^10.149.0
-      bufferutil: ^4.0.0
-      erlpack: discordapp/erlpack
-      libsodium-wrappers: ^0.7.3
-      node-opus: ^0.2.7
-      opusscript: ^0.0.6
-      sodium: ^2.0.3
-    resolution:
-      integrity: sha512-tGhV5xaZXE3Z+4uXJb3hYM6gQ1NmnSxp9PClcsSAYFVRzH6AJH74040mO3afPDMWEAlj8XsoPXXTJHTxesqcGw==
   /ee-first/1.1.1:
     dev: false
     resolution:
@@ -185,6 +177,12 @@ packages:
       node: '>= 0.6'
     resolution:
       integrity: sha1-Qa4u62XvpiJorr/qg6x9eSmbCIc=
+  /event-target-shim/5.0.1:
+    dev: false
+    engines:
+      node: '>=6'
+    resolution:
+      integrity: sha512-i/2XbnSz/uxRCU6+NdVJgKWDTM427+MqYbkQzD321DuCQJUqOuJKIA0IM2+W2xtYHdKOmZ4dR6fExsd4SXL+WQ==
   /express/4.17.1:
     dependencies:
       accepts: 1.3.7
@@ -331,10 +329,6 @@ packages:
     dev: false
     resolution:
       integrity: sha512-ErTBd++b17E8nmWII1K1uZtBgD1E8RjyvwmxlCjPHNqHMD7gmcMHOw0E8Ro/6+QT4PhHRSnnMo7bxa1vFPkwhg==
-  /long/4.0.0:
-    dev: false
-    resolution:
-      integrity: sha512-XsP+KhQif4bjX1kbuSiySJFNAehNxgLb6hPRGJ9QsUr8ajHkuXGdrHmFUTUUXhDwVX2R5bY4JNZEwbUiMhV+MA==
   /m3u8stream/0.6.2:
     dependencies:
       miniget: 1.5.3
@@ -465,6 +459,10 @@ packages:
     dev: false
     resolution:
       integrity: sha512-DcBadTdYTUuH9zQtepsLjQn4Ll6rs3dmeFvN+SD0ThPnxRBRm/WC1zXWPg+wgAJimB784gdZvUMA57gDP7FdVg==
+  /pako/1.0.10:
+    dev: false
+    resolution:
+      integrity: sha512-0DTvPVU3ed8+HNXOu5Bs+o//Mbdj9VNQMUOe9oKCwh8l0GNwpTDMKCWbRjgtD291AWnkAgkqA/LOnQS8AmS1tw==
   /parseurl/1.3.3:
     dev: false
     engines:
@@ -475,10 +473,6 @@ packages:
     dev: false
     resolution:
       integrity: sha1-32BBeABfUi8V60SQ5yR6G/qmf4w=
-  /prism-media/0.0.3:
-    dev: false
-    resolution:
-      integrity: sha512-c9KkNifSMU/iXT8FFTaBwBMr+rdVcN+H/uNv1o+CuFeTThNZNTOrQ+RgXA1yL/DeLk098duAeRPP3QNPNbhxYQ==
   /prism-media/1.1.0:
     dev: false
     peerDependencies:
@@ -621,6 +615,10 @@ packages:
       node: '>= 0.8.0'
     resolution:
       integrity: sha512-JMrvUwE54emCYWlTI+hGrGv5I8dEwmco/00EvkzIIsR7MqrHonbD9pO2MOfFnpFntl7ecpZs+3mW+XbQZu9QCg==
+  /setimmediate/1.0.5:
+    dev: false
+    resolution:
+      integrity: sha1-KQy7Iy4waULX1+qbg3Mqt4VvgoU=
   /setprototypeof/1.1.1:
     dev: false
     resolution:
@@ -632,11 +630,6 @@ packages:
     dev: false
     resolution:
       integrity: sha512-vmndP9Bkh35tifn2OwY+th2imSsfYtmDqczgdOW5yEARFzvSoR8VSQFsivJnctfV5QHQUL6VrOpNdbmDRLh9Bg==
-  /snekfetch/3.6.4:
-    deprecated: use node-fetch instead
-    dev: false
-    resolution:
-      integrity: sha512-NjxjITIj04Ffqid5lqr7XdgwM7X61c/Dns073Ly170bPQHLm6jkmelye/eglS++1nfTWktpP6Y2bFXjdPlQqdw==
   /sqlstring/2.3.1:
     dev: false
     engines:
@@ -744,12 +737,38 @@ packages:
       node: '>=6'
     resolution:
       integrity: sha512-mqPuZ1UyspT84lyV1FSU1UAoiQ4H5j52ba3sC1LC43OmL8qNaDIRCGffGlpiakQrc69qsplNWsWEZUF+J5bhJA==
+  github.com/discordjs/discord.js/d05334fd3cd8fb913e869654f25eb8230493de11:
+    dependencies:
+      '@discordjs/collection': 0.1.3
+      abort-controller: 3.0.0
+      form-data: 2.5.1
+      node-fetch: 2.6.0
+      pako: 1.0.10
+      prism-media: 1.1.0
+      setimmediate: 1.0.5
+      tweetnacl: 1.0.1
+      ws: 6.2.1
+    dev: false
+    engines:
+      node: '>=10.0.0'
+    name: discord.js
+    peerDependencies:
+      '@discordjs/uws': ^11.149.1
+      bufferutil: ^4.0.1
+      erlpack: discordapp/erlpack
+      libsodium-wrappers: ^0.7.4
+      sodium: ^3.0.2
+      zlib-sync: ^0.1.4
+      zucc: ^0.1.0
+    resolution:
+      tarball: 'https://codeload.github.com/discordjs/discord.js/tar.gz/d05334fd3cd8fb913e869654f25eb8230493de11'
+    version: 12.0.0-dev
 registry: 'https://registry.npmjs.org/'
 shrinkwrapMinorVersion: 9
 shrinkwrapVersion: 3
 specifiers:
   body-parser: ^1.19.0
-  discord.js: ^11.5.1
+  discord.js: 'github:discordjs/discord.js'
   express: ^4.17.1
   mysql: ^2.17.1
   node-opus: ^0.3.2
