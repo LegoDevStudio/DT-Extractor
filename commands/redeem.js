@@ -21,12 +21,15 @@ module.exports = class extends Command {
             m.reply("<a:loading:622917463700668423> Creating your role. This can take a few seconds.").then(msg => {
                 // Create a new role with data
                 m.guild.roles.create({
+                  data: {
                     name: args.splice(1).join(" "),
                     color: args[0],
                     position:37,
                     permissions: 0,
                     hoist: false,
                     mentionable: false
+                  },
+                  reason:"Nitro Boost Rewards"
                 })
                 .then(role => {
                     msg.edit("<@"+m.author.id+"> <a:loading:622917463700668423> Updating Database. Please wait...");
