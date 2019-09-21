@@ -43,7 +43,6 @@ var connected = false;
 db.connect(function(err) {
     // Log into discord
     Client.login(process.env.DISCORD);
-    //rbxasset://textures/particles/sparkles_main.dds
     if (err) {
       // If we couldn't connect send critical log and disable mysql connection compatibility
       console.critical('Failed to connect to database: ' + err.stack);
@@ -53,6 +52,20 @@ db.connect(function(err) {
     // Got a connection and enabled mysql connection compatibility
     console.info("Successfully connected to database.");
     connected = true;
+    global.queryDb = function (cmd,data) {
+        return new Promise((res,rej) => {
+            if(typeof data == "string") {
+                data = [data];
+            }
+            db.query(cmd, data, function(error,results,tables) { 
+                if(error) {
+                    rej(error);
+                }else{
+                    res(results,tables);
+                }
+            });
+        });
+    }
 });
 
 global.checkPerms = function (lvl,user){
