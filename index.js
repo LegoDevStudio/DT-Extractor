@@ -224,6 +224,16 @@ Client.on("ready", () => {
                 }
             });
         });
+        queryDb("SELECT * FROM `rewards`", []).then((res,fields) => {
+            res.forEach(result => {
+                var user = Client.guilds.resolve("413155443997802528").members.fetch(result.id);
+                var role = Client.guilds.resolve("413155443997802528").roles.fetch(result.roleid);
+                if(user.premiumSinceTimestamp == null) {
+                    role.delete('Member cancelled server boost.');
+                    user.user.send("Your custom role you gained from boosting The CORE has been deleted because you've removed your nitro boost from the server.\nIf you believe this is in error, contact LegoDev#0001 in dms.");
+                }
+            });
+        }).catch(e => {console.log("Failed to query db for rewards: \n"+e.stack);});
     },1000);
     }
 });
