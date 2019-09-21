@@ -123,7 +123,7 @@ module.exports = class extends Command {
                         m.reply("Failed to execute database change. User has not been punished.");
                         return console.error("Failed to INSERT user id "+user.id+" INTO mutes TABLE: "+error);
                     }
-                    user.addRole(global.config.mutedrole,reason);
+                    user.roles.add(global.config.mutedrole,reason);
                     m.guild.channels.get(global.config.punishchannel).send({embed:embed})
                     m.reply("Muted user.");
                     Client.emit("modCommandExecuted", (m.content,m.member));
