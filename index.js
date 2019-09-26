@@ -2,7 +2,7 @@ var Discord = require("discord.js");
 var mysql = require("mysql");
 var fs = require("fs");
 
-const version = "1.1.0";
+const version = "1.5.0";
 const prefix = ".?";
 global.version = version;
 global.prefix = prefix;
@@ -54,12 +54,15 @@ db.connect(function(err) {
     connected = true;
     global.queryDb = function (cmd,data) {
         return new Promise((res,rej) => {
+            if(connected == false) {
+                rej({"code":'NOT_CONNECTED',"message":"There's no connection to the SQL Database. Try again later"});
+            }
             if(typeof data == "string") {
                 data = [data];
             }
             db.query(cmd, data, function(error,results,tables) { 
                 if(error) {
-                    rej(error);
+                    rej({"code":error.code,"message":error.sqlMessage});
                 }else{
                     res(results,tables);
                 }
