@@ -117,16 +117,6 @@ global.getPerms = function(user) {
   });
 }
 
-global.permIdToName = {
-  "-1":"Bot Developer",
-  "0": "Everyone",
-  "1": "Server Helper",
-  "2": "Server Moderator",
-  "3": "Server Senior Moderator",
-  "4": "Server Administrator",
-  "5": "Server Owner"
-}
-
 function formatMessage(content) {
   let args = content.split(" ");
   let result = [];
@@ -159,7 +149,10 @@ Client.on("ready", () => {
 	
 	global.roles = {
 		"muted":server.roles.resolve(config.roles.muted),
-		//TODO - REST OF ROLES
+		"helper":server.roles.resolve(config.roles.helper),
+		"mod":server.roles.resolve(config.roles.mod),
+		"seniormod":server.roles.resolve(config.roles.seniormod),
+		"admin":server.roles.resolve(config.roles.admin)
 	}
 	
 	if(!connected) {
@@ -169,10 +162,17 @@ Client.on("ready", () => {
 			queryDB("SELECT * FROM `mutes`").then((results,fields) => {
 				results.forEach(result => {
 					if((parseInt(result.start)+result.duration) <= Date.now() && result.duration != 0) {
-						
+						let member = server.members.resolve(result.id);
+						//TODO - At home when DB access
 					}
 				});
 			}).catch(e => {console.error("SQL Error Occured:\nCode: "+e.code+"\nMessage: "+e.message);});
+			//TODO - At home when DB access
 		},60000);
+		
 	}
+});
+	
+Client.on("message", message => {
+	
 });
