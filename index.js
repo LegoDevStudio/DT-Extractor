@@ -1,7 +1,6 @@
 global.Discord = require("discord.js");
 var mysql = require("mysql");
 global.fs = require("fs");
-global.lang = require("./lang/en.json");
 
 global.version = "1.5.0";
 global.prefix = ".!";
@@ -52,7 +51,7 @@ db.connect(function(err) {
   Client.login(process.env.DISCORD);
   if(err) {
     // Failed to connect.
-    console.critical(lang.db.connect.fail.format([err.stack]));
+    console.critical("Failed to connect to database:\n{}".format(err.stack);
     return;
   }
   console.info(lang.db.connect.success);
@@ -60,7 +59,7 @@ db.connect(function(err) {
   global.queryDB = function(cmd,data) {
     return new Promise((res,rej) => {
       if(!connected) {
-        rej({"code":"NOT_CONNECTED","message":lang.db.query.error.notconnected});
+        rej({"code":"NOT_CONNECTED","message":"Database not connected."});
       }else{
         if(typeof data == "string") {
           data = [data];
@@ -91,14 +90,14 @@ global.checkPerms = function (lvl,user) {
     Client.fetchApplication().then(application => {
       if(lvl == -1) if(application.owner.id == user.id) return res(true);
       if(lvl == 0) return res(true);
-      if(lvl == 1) if(user.roles.has(global.config.roles.helper) || user.roles.has(global.config.roles.moderator) || user.roles.has(global.config.roles.seniormod) || user.roles.has(global.config.roles.admin) ||
-user.roles.has(global.config.roles.owner)) return res(true);
-      if(lvl == 2) if(user.roles.has(global.config.roles.moderator) || user.roles.has(global.config.roles.seniormod) || user.roles.has(global.config.roles.admin) ||
-user.roles.has(global.config.roles.owner)) return res(true);
-      if(lvl == 3) if(user.roles.has(global.config.roles.seniormod) || user.roles.has(global.config.roles.admin) || user.roles.has(global.config.roles.owner)) return res(true);
-      if(lvl == 4) if(user.roles.has(global.config.roles.admin) ||
-user.roles.has(global.config.roles.owner)) return res(true);
-      if(lvl == 5) if(user.roles.has(global.config.roles.owner)) return res(true);
+      if(lvl == 1) if(user.roles.has(config.roles.helper) || user.roles.has(config.roles.moderator) || user.roles.has(config.roles.seniormod) || user.roles.has(config.roles.admin) ||
+user.roles.has(config.roles.owner)) return res(true);
+      if(lvl == 2) if(user.roles.has(config.roles.moderator) || user.roles.has(config.roles.seniormod) || user.roles.has(config.roles.admin) ||
+user.roles.has(config.roles.owner)) return res(true);
+      if(lvl == 3) if(user.roles.has(config.roles.seniormod) || user.roles.has(config.roles.admin) || user.roles.has(config.roles.owner)) return res(true);
+      if(lvl == 4) if(user.roles.has(config.roles.admin) ||
+user.roles.has(config.roles.owner)) return res(true);
+      if(lvl == 5) if(user.roles.has(config.roles.owner)) return res(true);
       return res(false);
     });
   });
@@ -108,10 +107,10 @@ global.getPerms = function(user) {
   return new Promise((res,rej) => {
     Client.fetchApplication().then(application => {
       if(user.guild.owner == user) return res(5);
-      if(user.roles.has(global.config.admin)) return res(4);
-      if(user.roles.has(global.config.seniormod)) return res(3);
-      if(user.roles.has(global.config.mod)) return res(2);
-      if(user.roles.has(global.config.helper)) return res(1);
+      if(user.roles.has(config.roles.admin)) return res(4);
+      if(user.roles.has(config.roles.seniormod)) return res(3);
+      if(user.roles.has(config.roles.mod)) return res(2);
+      if(user.roles.has(config.roles.helper)) return res(1);
       if(application.owner.id == user.id) return res(-1);
       return res(0);
     });
@@ -128,4 +127,52 @@ global.permIdToName = {
   "5": "Server Owner"
 }
 
-//LINE 114 - TO DO
+function formatMessage(content) {
+  let args = content.split(" ");
+  let result = [];
+  args.forEach(arg => {
+    if(arg.startsWith("${&") && arg.replace(",","").endsWith("}")) {
+      // Role mention
+      arg = arg.replace("${&","<@&").replace("}",">");
+    }
+    result[result.length] = arg;
+  });
+  return result.join(" ");
+}
+    
+Client.on("ready", () => {
+	console.info("Bot Booted.");
+	
+	Client.user.setActivity("messages | v"+version, {"type":"WATCHING"});
+	
+	global.server = Client.guilds.resolve("413155443997802528");
+	server.roles.fetch().then(roles => {
+		console.debug("Fetched {} roles and stored in cache".format(roles.size));
+	}).catch(err => {
+		console.warn("Failed to fetch roles:\n{}".format(err.stack));
+	});
+	server.members.fetch({cache:true}).then(members => {
+		console.debug("Fetched {} members and stored in cache".format(members.size));
+	}).catch(err => {
+		console.warn("Failed to fetch members:\n{}".format(err.stack));
+	});
+	
+	global.roles = {
+		"muted":server.roles.resolve(config.roles.muted),
+		//TODO - REST OF ROLES
+	}
+	
+	if(!connected) {
+		console.warn("Due to failure to connect to the database, Database checks cannot occur.");
+	}else{
+		setInterval(() => {
+			queryDB("SELECT * FROM `mutes`").then((results,fields) => {
+				results.forEach(result => {
+					if((parseInt(result.start)+result.duration) <= Date.now() && result.duration != 0) {
+						
+					}
+				});
+			}).catch(e => {console.error("SQL Error Occured:\nCode: "+e.code+"\nMessage: "+e.message);});
+		},60000);
+	}
+});
