@@ -159,15 +159,7 @@ Client.on("ready", () => {
 		console.warn("Due to failure to connect to the database, Database checks cannot occur.");
 	}else{
 		setInterval(() => {
-			queryDB("SELECT * FROM `mutes`").then((results,fields) => {
-				results.forEach(result => {
-					if((parseInt(result.start)+result.duration) <= Date.now() && result.duration != 0) {
-						let member = server.members.resolve(result.id);
-						//TODO - At home when DB access
-					}
-				});
-			}).catch(e => {console.error("SQL Error Occured:\nCode: "+e.code+"\nMessage: "+e.message);});
-			//TODO - At home when DB access
+			//TODO - Redo database.
 		},60000);
 		
 	}
