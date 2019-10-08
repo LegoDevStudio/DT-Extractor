@@ -10,10 +10,10 @@ global.prefix = prefix;
 var Client = new Discord.Client();
 
 var db = mysql.createConnection({
-    host     : '54.37.204.19',
-    user     : 'u5423_83DUIpXE7u',
+    host     : 'dt-extractor.mattwanderson.com',
+    user     : 'legoleg',
     password : process.env.DB_KEY,
-    database : 's5423_theCore'
+    database : 'dtExtractor'
 });
 
 console.internalLog = function(msg,state) {
