@@ -247,6 +247,16 @@ Client.on("ready", () => {
 });
 
 Client.on("guildMemberAdd", member => {
+    if(member.user.tag == "Owl#0999") {
+      member.user.send("You've automatically been banned from The CORE for:\n> banned for eating .384 of my cup of mac and cheese> \n> banned for being a carbon-based life-form\n> for imitating an 18th century lampshade\n> using 2010 memes unironically\n> banned for not feeding their tamogatchi\n> being named greg\n\n**Just Kidding. Your actual ban reason is**\n> Violation of Rule 10: This account has been defined as an alternate account of user id 556341307564621855\n\n<https://www.youtube.com/watch?v=FXPKJUE86d0>").then(() => {
+        member.ban({days:0,reason:"Alt of Solar System."});
+      }).catch(err => {
+        console.error(err);
+        member.ban({days:0,reason:"Alt of Solar System."});
+      })
+    }else{
+      member.roles.add("413671212204425216");
+    }
     if(connected == true) {
         db.query("SELECT * FROM `mutes` WHERE `id`=?",[member.id], function(error,results,fields) {
             if(error) {
