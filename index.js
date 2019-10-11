@@ -68,7 +68,7 @@ db.connect(function(err) {
           if(error) {
             rej({"code":error.code,"message":error.sqlMessage});
           }else{
-            res(results,tables);
+            res(results);
           }
         });
       }
@@ -159,7 +159,41 @@ Client.on("ready", () => {
 		console.warn("Due to failure to connect to the database, Database checks cannot occur.");
 	}else{
 		setInterval(() => {
-			//TODO - Redo database.
+			queryDB("SELECT * FROM `mutes`", []).then(results => {
+				results.forEach(result => {
+					if((parseInt(result.start)+result.duration) <= Date.now() && result.duration != 0) {
+						let member = server.members.resolve(result.id);
+						queryDB("DELETE FROM `mutes` WHERE `id`=?", [result.id]).then(res => {
+							member.roles.remove(roles.muted, "Mute Over.");
+							member.user.send("Your mute in "+server.name+" is over.");
+							let embed = {
+                "color": 261888,
+                "timestamp": Date.now(),
+                "author": {
+                	"name": "Unmute | Case #"+result.caseid,
+                  "icon_url": member.user.displayAvatarURL
+                },
+                "fields": [
+                  {
+                  	"name": "Username",
+                    "value": "<@"+member.id+">",
+                    "inline": true
+                  },
+                  {
+                    "name": "Moderator",
+                    "value": "<@551117156054728704>",
+                    "inline": true
+                  },
+                  {
+                    "name": "Reason",
+                    "value": "Mute over. Auto."
+                  }
+                ]
+            	};
+						}).catch(e => { console.error("Failed to query database:\n	Code: "+e.code+"\n	Message: "+e.message); });
+					}
+				});
+			}).catch(e => { console.error("Failed to query database:\n	Code: "+e.code+"\n	Message: "+e.message); });
 		},60000);
 		
 	}
