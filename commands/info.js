@@ -35,7 +35,7 @@ module.exports = class extends Command {
               },
               {
                 "name": "Library",
-                "value": "discord.js v12-dev",
+                "value": "discord.js",
                 "inline": true
               },
               {

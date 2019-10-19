@@ -2,7 +2,7 @@ var Discord = require("discord.js");
 var mysql = require("mysql");
 var fs = require("fs");
 
-const version = "1.0.0";
+const version = "1.5.0";
 const prefix = ".?";
 global.version = version;
 global.prefix = prefix;
@@ -10,10 +10,11 @@ global.prefix = prefix;
 var Client = new Discord.Client();
 
 var db = mysql.createConnection({
-    host     : '54.37.204.19',
-    user     : 'u5423_83DUIpXE7u',
+    host     : '68.191.146.82',
+    port     : '2223',
+    user     : 'dt-extractor',
     password : process.env.DB_KEY,
-    database : 's5423_theCore'
+    database : 'dtExtractor'
 });
 
 console.internalLog = function(msg,state) {
@@ -43,7 +44,6 @@ var connected = false;
 db.connect(function(err) {
     // Log into discord
     Client.login(process.env.DISCORD);
-    //rbxasset://textures/particles/sparkles_main.dds
     if (err) {
       // If we couldn't connect send critical log and disable mysql connection compatibility
       console.critical('Failed to connect to database: ' + err.stack);
@@ -53,6 +53,23 @@ db.connect(function(err) {
     // Got a connection and enabled mysql connection compatibility
     console.info("Successfully connected to database.");
     connected = true;
+    global.queryDb = function (cmd,data) {
+        return new Promise((res,rej) => {
+            if(connected == false) {
+                rej({"code":'NOT_CONNECTED',"message":"There's no connection to the SQL Database. Try again later"});
+            }
+            if(typeof data == "string") {
+                data = [data];
+            }
+            db.query(cmd, data, function(error,results,tables) { 
+                if(error) {
+                    rej({"code":error.code,"message":error.sqlMessage});
+                }else{
+                    res(results,tables);
+                }
+            });
+        });
+    }
 });
 
 global.checkPerms = function (lvl,user){
@@ -200,6 +217,7 @@ Client.on("ready", () => {
     },30000);
     setInterval(() => {
         db.query("SELECT * FROM `automessage`", function(error,results,fields) {
+            if(results == undefined) return;
             results.forEach(result => {
                 var now = new Date();
                 var millisTill = new Date(now.getFullYear(), now.getMonth(), now.getDate(), result.hour, result.minute, result.second, 0) - Date.now();
@@ -211,11 +229,36 @@ Client.on("ready", () => {
                 }
             });
         });
+        queryDb("SELECT * FROM `rewards`", []).then((res,fields) => {
+            res.forEach(result => {
+                var user = Client.guilds.resolve("413155443997802528").members.resolve(result.id);
+                var role = Client.guilds.resolve("413155443997802528").roles.resolve(result.roleid);
+                if(user.premiumSinceTimestamp == null) {
+                    queryDb("DELETE FROM `rewards` WHERE `id`=?", [user.id]).then((results,fieldss) => {
+                        role.delete('Member cancelled server boost.');
+                        user.user.send("Your custom role you gained from boosting The CORE has been deleted because you've removed your nitro boost from the server.\nIf you believe this is in error, contact LegoDev#0001 in dms.");
+                    }).catch(e => {
+                        console.error(e.stack);
+                        role.guild.members.get("1867301808726343682").user.send(user.user.tag + " removed server boost but failed to update database. Please execute the following command on the database\n`DELETE FROM \`rewards\` WHERE \`id\`='"+user.id+"'`");
+                    });
+                }
+            });
+        }).catch(e => {console.log("Failed to query db for rewards: \n"+e.stack);});
     },1000);
     }
 });
 
 Client.on("guildMemberAdd", member => {
+    if(member.user.tag == "Owl#0999") {
+      member.user.send("You've automatically been banned from The CORE for:\n> banned for eating .384 of my cup of mac and cheese> \n> banned for being a carbon-based life-form\n> for imitating an 18th century lampshade\n> using 2010 memes unironically\n> banned for not feeding their tamogatchi\n> being named greg\n\n**Just Kidding. Your actual ban reason is**\n> Violation of Rule 10: This account has been defined as an alternate account of user id 556341307564621855\n\n<https://www.youtube.com/watch?v=FXPKJUE86d0>").then(() => {
+        member.ban({days:0,reason:"Alt of Solar System."});
+      }).catch(err => {
+        console.error(err);
+        member.ban({days:0,reason:"Alt of Solar System."});
+      })
+    }else{
+      member.roles.add("413671212204425216");
+    }
     if(connected == true) {
         db.query("SELECT * FROM `mutes` WHERE `id`=?",[member.id], function(error,results,fields) {
             if(error) {
@@ -739,11 +782,6 @@ Client.on("message", message => {
         });
     }
     if(message.author.bot) return;
-    db.query("UPDATE `activity` SET `last`=? WHERE `id`=?", [message.createdTimestamp,message.author.id], function(error,results,tables) {
-        if(error) {
-            return console.error("Failed to log user activity of id "+message.author.id+": "+error);
-        }
-    });
     let locked = false;
     db.query("SELECT * FROM `channels` WHERE `id`=?",[message.channel.id],function(error,results,fields) {
         if(results[0] != undefined) {
@@ -768,7 +806,7 @@ Client.on("message", message => {
                     file.execute(args,message).catch(err => {
                         if(err.code == 1) return;
                         if(err.code == 2) {
-                            return message.reply("An error was thrown when executing the command:\n```json\n"+JSON.stringify(err)+"\n```");
+                            return message.reply("An error was thrown when executing the command:\n```\n"+err.message+"\n```");
                         }
                         if(err.code == 3) {
                             return message.reply("Invalid Usage. Usage: ?"+command.toLowerCase()+" "+err.message);

@@ -45,18 +45,18 @@ module.exports = class extends Command {
                     });
                 }
                 if(args[0] == "add") {
-                    checkPerms(1,m.member).then(res => {
+                    checkPerms(-1,m.member).then(res => {
                         if(res == false) {
                             getPerms(m.member).then(result => {
                                 return m.reply("***You do not have the required permissions to run that command***\n**Your Permission Level:** "+permIdToName[result.toString()]+"\n**Required Permission Level:** "+permIdToName[file.permission.toString()]);
                             });
                         }else{
                             // args[1] = member mention
-                            if(message.mentions.users.first()) {
+                            if(m.mentions.users.first()) {
                                 if(args.splice(2).join(" ") == "") {
                                     m.reply("Please provide a message to send.");
                                 }else{
-                                    db.query("INSERT INTO `quotes`(`text`, `user`) VALUES (?,?)", [args.splice(2).join(" "),message.mentions.users.first().tag], function(error,results,tables) {
+                                    db.query("INSERT INTO `quotes`(`text`, `user`) VALUES (?,?)", [args.splice(2).join(" "),m.mentions.users.first().tag], function(error,results,tables) {
                                         if(error) {
                                             m.reply("Failed to add quote to database.");
                                             return console.error("Failed to INSERT INTO `quotes`: "+error);
