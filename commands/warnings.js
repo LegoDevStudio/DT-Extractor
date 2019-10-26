@@ -9,6 +9,7 @@ module.exports = class extends Command {
         this.permission = 1;
         this.usage = "<user id or mention>";
         this.args = 1;
+        this.alias = ["warns"]
     }
     code(args,m) {
         let user = null;
@@ -19,7 +20,7 @@ module.exports = class extends Command {
         }else{
             return "Must be a userid or mention."
         }
-        db.query("SELECT `caseid` FROM `cases` WHERE `user`=?", [user.id], function(error,results,fields) {
+        queryDB("SELECT `caseid` FROM `cases` WHERE `user`=?", [user.id]).then(results => {
             if(error) {
                 m.reply("Unable to fetch case.");
                 return console.error("Failed to SELECT `caseid` from `cases` WHERE `user`="+user.id+": "+error);
@@ -29,6 +30,10 @@ module.exports = class extends Command {
                 cases = cases + "\n" + result.caseid;
             });
             m.reply("Here's a list of cases for "+user.user.username+"."+cases+"\nUse ?case <case id> to view them.");
+        }).catch(e => { 
+            if(e.code == "NOT_CONNECTED") return "Database is not connected. Bot functionaly limited.";
+            m.reply("Failed to get data from database.");
+            console.error("Failed to query database:\n	Code: "+e.code+"\n	Message: "+e.message);
         });
     }
 }

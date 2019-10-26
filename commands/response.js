@@ -24,12 +24,12 @@ module.exports = class extends Command {
                 .then(collected => {
                     let msg = collected.array()[0];
                     m.reply("Adding autoresponse...");
-                    db.query("INSERT INTO `responces`(`msg`, `response`) VALUES (?,?)", [trigger,msg.content], function(error,results,fields) {
-                        if(error) {
-                            m.reply("Failed to add autoresponse.");
-                            return console.error("Failed to INSERT autoresponse: "+error);
-                        }
+                    queryDB("INSERT INTO `responces`(`msg`, `response`) VALUES (?,?)", [trigger,msg.content]).then(results => {
                         m.reply("Successfully added `"+trigger+"` as an autorespose. Try it out!");
+                    }).catch(e => { 
+                        if(e.code == "NOT_CONNECTED") return "Database is not connected. Bot functionaly limited.";
+                        m.reply("Failed to execute database change. Response not added.");
+                        console.error("Failed to query database:\n	Code: "+e.code+"\n	Message: "+e.message);
                     });
                 })
                 .catch(collected => m.reply("Canceled addition."));
@@ -37,20 +37,24 @@ module.exports = class extends Command {
             if(args[1] == undefined) {
                 return "You must define a trigger message\n?response remove <trigger message>";
             }
-            db.query("DELETE FROM `responces` WHERE `msg`=?", [args.splice(1).join(" ")], function(error,results,fields) {
-                if(error) {
-                    m.reply("Failed to delete autoresponse.");
-                    return console.error("Failed to DELETE autoresponse: "+error);
-                }
+            queryDB("DELETE FROM `responces` WHERE `msg`=?", [args.splice(1).join(" ")]).then(results => {
                 m.reply("Deleted autoresponse.");
+            }).catch(e => { 
+                if(e.code == "NOT_CONNECTED") return "Database is not connected. Bot functionaly limited.";
+                m.reply("Failed to execute database change. Response not removed.");
+                console.error("Failed to query database:\n	Code: "+e.code+"\n	Message: "+e.message);
             });
         }else if(args[0] == "list") {
-            db.query("SELECT * FROM `responces`", function(error,results,fields) {
+            queryDB("SELECT * FROM `responces`",[]).then(results => {
                 let list = "";
                 results.forEach(result => {
                     list = list + "\n" + result.msg;
                 });
                 m.reply("List of autoresponses:\n```"+list+"\n```");
+            }).catch(e => { 
+                if(e.code == "NOT_CONNECTED") return "Database is not connected. Bot functionaly limited.";
+                m.reply("Failed to get data from database.");
+                console.error("Failed to query database:\n	Code: "+e.code+"\n	Message: "+e.message);
             });
         }
     }

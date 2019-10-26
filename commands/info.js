@@ -6,7 +6,8 @@ module.exports = class extends Command {
         this.name = "info";
         this.module = "Utility";
         this.description = "Bot Info.";
-        this.permission = 0
+        this.permission = 0;
+        this.alias = ["bot"]
     }
     code(args,m) {
         let shard = 0;
@@ -35,7 +36,7 @@ module.exports = class extends Command {
               },
               {
                 "name": "Library",
-                "value": "discord.js",
+                "value": "discord.js@master",
                 "inline": true
               },
               {

@@ -29,11 +29,7 @@ module.exports = class extends Command {
         // 2 = kick
         // 3 = ban
         let start = Date.now().toString();
-        db.query("SELECT `caseid` FROM `mutes` WHERE `id`=?", [user.id], function(error,results,tables) {
-            if(error) {
-                m.reply("Failed to access database.");
-                return console.error("Failed to SELECT `caseid` from user id "+user.id+": "+error);
-            }
+        queryDB("SELECT `caseid` FROM `mutes` WHERE `id`=?", [user.id]).then(results => {
             if(results[0] == undefined) m.reply("Unable to find user in database. Maybe muted from another bot?");
             console.log(results);
             let embed = {
@@ -56,18 +52,20 @@ module.exports = class extends Command {
                     }
                 ]
             };
-            user.removeRole(global.config.mutedrole,reason);
-            m.guild.channels.get(global.config.punishchannel).send({embed:embed})
-            db.query("DELETE FROM `mutes` WHERE `caseid`=?", [results[0].caseid], function(error,results,tables) {
-                if(error) {
-                    m.reply("Failed to delete mute. Unable to unmute.");
-                    return console.error("Failed to DELETE user id "+user.id+" FROM mutes TABLE: "+error);
-                }
+            queryDB("DELETE FROM `mutes` WHERE `caseid`=?", [results[0].caseid]).then(results => {
                 user.removeRole(global.config.mutedrole,reason);
                 m.guild.channels.get(global.config.punishchannel).send({embed:embed})
                 m.reply("Unmuted user.");
                 Client.emit("modCommandExecuted", (m.content,m.member));
+            }).catch(e => { 
+                if(e.code == "NOT_CONNECTED") return "Database is not connected. Bot functionaly limited.";
+                m.reply("Failed to execute database change. User has not been unmuted.");
+                console.error("Failed to query database:\n	Code: "+e.code+"\n	Message: "+e.message);
             });
+        }).catch(e => { 
+            if(e.code == "NOT_CONNECTED") return "Database is not connected. Bot functionaly limited.";
+            m.reply("Failed to execute database change. User has not been unmuted.");
+            console.error("Failed to query database:\n	Code: "+e.code+"\n	Message: "+e.message);
         });
     }
 }
