@@ -2,6 +2,7 @@ global.Discord = require("discord.js");
 global.Client = new Discord.Client();
 global.fs = require("fs");
 global.prefix = ".?"
+global.version = "1.5.0";
 global.CommandStore = require("./CmdStore");
 global.spintax = require('spintax');
 
@@ -22,7 +23,7 @@ Client.on("ready", () => {
     console.info("Online.");
     var events = require("./util/Events");
     CommandStore.registerCommands("/commands");
-    Client.user.setActivity("test", {type:"CUSTOM"});
+    Client.user.setActivity("messages | v"+version, {"type":"WATCHING"});
 
     global.server = Client.guilds.resolve("413155443997802528");
 	server.roles.fetch().then(roles => {
