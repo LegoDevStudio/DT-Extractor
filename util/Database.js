@@ -4,14 +4,14 @@ var db = mysql.createConnection({
     host     : '68.191.146.82',
     port     : '2223',
     user     : 'dt-extractor',
-    password : "5gybsDTQ3hSJ2B7r",
+    password : process.env.DB_KEY,
     database : 'dtExtractor'
 });
 
 global.connected = false;
 
 db.connect(function(err) {
-    Client.login("NjI2NjYzMjE5Mzk3Nzg3NjU4.Xay5ag.ZJ54gbmDV6cZb-ERGSyrJjrdV2M")
+    Client.login(process.env.DISCORD)
     if(err) {
       // Failed to connect.
       console.critical("Failed to connect to database:\n{}".format(err.stack));
