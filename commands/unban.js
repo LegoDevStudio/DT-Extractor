@@ -29,11 +29,7 @@ module.exports = class extends Command {
         // 2 = kick
         // 3 = ban
         let start = Date.now().toString();
-        db.query("SELECT `caseid` FROM `bans` WHERE `id`=?", [user.id], function(error,results,tables) {
-            if(error) {
-                m.reply("Failed to call database. User cannot be unbanned.");
-                return console.error("Failed to SELECT `caseid` from user id "+user.id+": "+error);
-            }
+        queryDB("SELECT `caseid` FROM `bans` WHERE `id`=?", [user.id]).then(results => {
             if(results[0] == undefined) {
                 m.result("Ban doesn't exist in table. Maybe you unbanned from a different bot? Continuing...");
             }
@@ -58,7 +54,7 @@ module.exports = class extends Command {
                     }
                 ]
             };
-            db.query("DELETE FROM `bans` WHERE `caseid`=?", [results[0].caseid], function(error,results,tables) {
+            queryDB("DELETE FROM `bans` WHERE `caseid`=?", [results[0].caseid]).then(results => {
                 if(error) {
                     m.reply("Failed to delete ban from database. Unable to ban.");
                     return console.error("Failed to DELETE user id "+user.id+" FROM bans TABLE: "+error);
@@ -67,7 +63,15 @@ module.exports = class extends Command {
                 m.guild.channels.get(global.config.punishchannel).send({embed:embed})
                 m.reply("Unbanned user.");
                 Client.emit("modCommandExecuted", (m.content,m.member));
+            }).catch(e => { 
+                if(e.code == "NOT_CONNECTED") return "Database is not connected. Bot functionaly limited.";
+                m.reply("Failed to execute database change. User has not been unbanned.");
+                console.error("Failed to query database:\n	Code: "+e.code+"\n	Message: "+e.message);
             });
+        }).catch(e => { 
+            if(e.code == "NOT_CONNECTED") return "Database is not connected. Bot functionaly limited.";
+            m.reply("Failed to execute database change. User has not been unbanned.");
+            console.error("Failed to query database:\n	Code: "+e.code+"\n	Message: "+e.message);
         });
     }
 }

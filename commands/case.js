@@ -14,11 +14,7 @@ module.exports = class extends Command {
         if(isNaN(parseInt(args[0]))) {
             return "Case id must be a number."
         }
-        db.query("SELECT * FROM `cases` WHERE `caseid`=?", [parseInt(args[0])], function(error,results,fields) {
-            if(error) {
-                m.reply("Failed to select from database.");
-                return console.error("Failed to SELECT * from `cases` WHERE `caseid`="+args[0]+": "+error);
-            }
+        queryDB("SELECT * FROM `cases` WHERE `caseid`=?", [parseInt(args[0])]).then(results => {
             if(results[0] == undefined) {
                 return "Case doesn't exist.";
             }
@@ -61,6 +57,10 @@ module.exports = class extends Command {
             if(results[0].active == 0) {
               m.channel.send("Notice: This warn is no longer active."); 
             }
-        });
+        }).catch(e => { 
+          if(e.code == "NOT_CONNECTED") return "Database is not connected. Bot functionaly limited.";
+          m.reply("Failed to grab data from database table.");
+          console.error("Failed to query database:\n	Code: "+e.code+"\n	Message: "+e.message);
+      });
     }
 }

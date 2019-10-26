@@ -11,37 +11,37 @@ module.exports = class extends Command {
     }
     code(args,m) {
         if(args[0] == undefined) {
-            db.query("SELECT * FROM `quotes`", function(error,results,fields) {
-                if(error) {
-                    m.reply("Failed to get a quote. SQL error occured.");
-                    return console.error("Failed to SELECT * FROM `quotes`: "+error);
-                }
+            queryDB("SELECT * FROM `quotes`",[]).then(results => {
                 let random = Math.floor(Math.random() * (results.length-1));
                 let quote = results[random];
                 m.reply("\n> "+quote.text+"\n- "+quote.user);
+            }).catch(e => { 
+                if(e.code == "NOT_CONNECTED") return "Database is not connected. Bot functionaly limited.";
+                m.reply("Failed to get data from database. *dammit lego*");
+                console.error("Failed to query database:\n	Code: "+e.code+"\n	Message: "+e.message);
             });
         }else{
             if(!isNaN(parseInt(args[0]))) {
-                db.query("SELECT * FROM `quotes` WHERE `id`=?",[parseInt(args[0])],function(error,results,fields) {
-                    if(error) {
-                        m.reply("Failed to get quote. SQL error occured.");
-                        return console.error("Failed to SELECT * FROM `quotes` WHERE `id`="+args[0]+": "+error);
-                    }
+                queryDB("SELECT * FROM `quotes` WHERE `id`=?",[parseInt(args[0])]).then(results => {
                     let quote = results[0];
                     m.reply("\n> "+quote.text+"\n- "+quote.user);
+                }).catch(e => { 
+                    if(e.code == "NOT_CONNECTED") return "Database is not connected. Bot functionaly limited.";
+                    m.reply("Failed to get data from database.");
+                    console.error("Failed to query database:\n	Code: "+e.code+"\n	Message: "+e.message);
                 });
             }else{
                 if(args[0] == "list") {
-                    db.query("SELECT `id` FROM `quotes`", function(error,results,fields) {
-                        if(error) {
-                            m.reply("Failed to get quote list. SQL error occured.");
-                            return console.error("Failed to SELECT `id` FROM `quotes`: "+error);
-                        }
+                    queryDB("SELECT `id` FROM `quotes`",[]).then(results => {
                         let msg = "";
                         results.forEach(result => {
                             msg = msg + "\n"+result.id;
                         });
                         m.reply("Quote list:"+msg+"\n\n*Run "+prefix+"quote <id> to view quote*");
+                    }).catch(e => { 
+                        if(e.code == "NOT_CONNECTED") return "Database is not connected. Bot functionaly limited.";
+                        m.reply("Failed to get data from database. *come on lego it's simple programming*");
+                        console.error("Failed to query database:\n	Code: "+e.code+"\n	Message: "+e.message);
                     });
                 }
                 if(args[0] == "add") {
@@ -56,12 +56,12 @@ module.exports = class extends Command {
                                 if(args.splice(2).join(" ") == "") {
                                     m.reply("Please provide a message to send.");
                                 }else{
-                                    db.query("INSERT INTO `quotes`(`text`, `user`) VALUES (?,?)", [args.splice(2).join(" "),message.mentions.users.first().tag], function(error,results,tables) {
-                                        if(error) {
-                                            m.reply("Failed to add quote to database.");
-                                            return console.error("Failed to INSERT INTO `quotes`: "+error);
-                                        }
+                                    queryDB("INSERT INTO `quotes`(`text`, `user`) VALUES (?,?)", [args.splice(2).join(" "),message.mentions.users.first().tag]).then(results => {
                                         m.reply("Quote Added.");
+                                    }).catch(e => { 
+                                        if(e.code == "NOT_CONNECTED") return "Database is not connected. Bot functionaly limited.";
+                                        m.reply("Failed to execute database change. Quote not added.");
+                                        console.error("Failed to query database:\n	Code: "+e.code+"\n	Message: "+e.message);
                                     });
                                 }
                             }else{
@@ -81,12 +81,12 @@ module.exports = class extends Command {
                             if(args[1] == undefined || isNaN(parseInt(args[1]))) {
                                 return m.reply("Please provide a quote id to remove. MUST be a number.");
                             }
-                            db.query("DELETE FROM `quotes` WHERE `id`=?", [parseInt(args[1])], function(error,results,tables) {
-                                if(error) {
-                                    m.reply("Failed to delete quote.");
-                                    return console.error("Failed to DELETE quote: "+error);
-                                }
+                            queryDB("DELETE FROM `quotes` WHERE `id`=?", [parseInt(args[1])]).then(results => {
                                 m.reply("Quote Removed.");
+                            }).catch(e => { 
+                                if(e.code == "NOT_CONNECTED") return "Database is not connected. Bot functionaly limited.";
+                                m.reply("Failed to execute database change. Quote not removed.");
+                                console.error("Failed to query database:\n	Code: "+e.code+"\n	Message: "+e.message);
                             });
                         }
                     });

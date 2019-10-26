@@ -33,12 +33,9 @@ module.exports = class extends Command {
         // 2 = kick
         // 3 = ban
         let start = Date.now().toString();
-        db.query("INSERT INTO `cases`(`user`, `issuer`, `type`, `reason`, `duration`, `start`, `active`) VALUES (?,?,?,?,?,?,?)", [user.id,m.author.id,0,reason,0,start,true], function(error,results,tables) {
-            if(error) {
-                m.reply("Failed to add case. Unable to warn.");
-                return console.error("Failed to INSERT user id "+user.id+" INTO cases TABLE: "+error);
-            }
-            db.query("SELECT `caseid` FROM `cases` WHERE `user`=? AND `start`=?", [user.id, start], function(error,results,tables) {
+        queryDB("INSERT INTO `cases`(`user`, `issuer`, `type`, `reason`, `duration`, `start`, `active`) VALUES (?,?,?,?,?,?,?)", [user.id,m.author.id,0,reason,0,start,true]).then(results => {
+
+            queryDB("SELECT `caseid` FROM `cases` WHERE `user`=? AND `start`=?", [user.id, start]).then(results => {
                 console.log(results);
                 let embed = {
                     "color": 16711683,
@@ -67,7 +64,15 @@ module.exports = class extends Command {
                 m.guild.channels.get(global.config.punishchannel).send({embed:embed});
                 user.user.send("Hey, You got warned by a moderator in "+m.guild.name+" for "+reason+". If you continue your behaviour, further punishment will occur.");
                 m.reply("Warned user.");
+            }).catch(e => { 
+                if(e.code == "NOT_CONNECTED") return "Database is not connected. Bot functionaly limited.";
+                m.reply(m.author.username + ": please let this command execute normally\nDT Extractor: With this bot? NO WAY!\nThe database errored :/");
+                console.error("Failed to query database:\n	Code: "+e.code+"\n	Message: "+e.message);
             });
+        }).catch(e => { 
+            if(e.code == "NOT_CONNECTED") return "Database is not connected. Bot functionaly limited.";
+            m.reply(m.author.username + ": please let this command execute normally\nDT Extractor: With this bot? NO WAY!\nThe database errored :/");
+            console.error("Failed to query database:\n	Code: "+e.code+"\n	Message: "+e.message);
         });
     }
 }
