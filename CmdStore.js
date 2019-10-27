@@ -19,7 +19,7 @@ class CommandStore {
                 console.log(res);
                 if(res == false) {
                     getPerms(msg.member).then(result => {
-                        return msg.reply("***You do not have the required permissions to run that command***\n**Your Permission Level:** "+permIdToName[result.toString()]+"\n**Required Permission Level:** "+permIdToName[file.permission.toString()]);
+                        return msg.reply("***You do not have the required permissions to run that command***\n**Your Permission Level:** "+permIdToName[result.toString()]+"\n**Required Permission Level:** "+permIdToName[this.cmds[cmdName].permission.toString()]);
                     });
                 }else{
                     console.log(cmdName+" "+args);

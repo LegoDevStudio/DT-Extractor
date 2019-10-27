@@ -34,7 +34,7 @@ Client.on("guildMemberAdd", member => {
         if(global.config.announcements.joinmsg.sendAsDM) {
             member.user.send(global.config.announcements.joinmsg.text);
         }else{
-            member.guild.channels.get(global.config.announcements.channelid).send(global.config.announcements.joinmsg.text.replace("${user}",member.user.username).replace("${server}",member.guild.name).replace("${@user}","<@"+member.id+">"));
+            member.guild.channels.get(global.config.announcements.channelid).send(global.config.announcements.joinmsg.text.replace("{user}",member.user.username).replace("{server}",member.guild.name).replace("{@user}","<@"+member.id+">"));
         }
     }
     if(global.config.welcomemsg.enabled == true) {

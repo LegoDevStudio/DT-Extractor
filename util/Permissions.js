@@ -10,9 +10,9 @@ global.checkPerms = function (lvl,user){
     Client.fetchApplication().then(application=>{
       if(lvl == -1) if(application.owner.id == user.id) return res(true);
       if(lvl == 0) return res(true);
-      if(lvl == 1) if(user.roles.has(global.config.modrole) || user.roles.has(global.config.adminrole) || user.guild.owner == user) return res(true);
+      if(lvl == 1) if(user.roles.has(global.config.modrole) || user.roles.has(global.config.adminrole) || user.guild.owner == user || user.hasPermission("KICK_MEMBERS")) return res(true);
       if(lvl == 2) if(user.roles.has(global.config.adminrole) || user.guild.owner == user) return res(true);
-      if(lvl == 3) if(user.guild.owner == user) return res(true);
+      if(lvl == 3) if(user.roles.has("413495651658104833")) return res(true);
       return res(false);
     });
     });

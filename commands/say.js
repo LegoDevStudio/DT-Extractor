@@ -6,11 +6,10 @@ module.exports = class extends Command {
         this.name = "say";
         this.module = "Utility";
         this.description = "Echo!";
-        this.permission = -1
+        this.permission = 3
     }
     code(args,m) {
         m.channel.send(args.join(" "))
         m.delete();
     }
-    
 }
