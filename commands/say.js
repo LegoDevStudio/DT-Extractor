@@ -12,5 +12,4 @@ module.exports = class extends Command {
         m.channel.send(args.join(" "))
         m.delete();
     }
-    
 }
