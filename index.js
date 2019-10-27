@@ -5,6 +5,7 @@ global.prefix = ".?"
 global.version = "1.5.0";
 global.CommandStore = require("./CmdStore");
 global.spintax = require('spintax');
+const errorMsgs = ["U-Undyne I s-said don-n't press t-that button!","Well shit the duct tape and gum failed, time to apply more"]
 
 CommandStore.prototype.registerCommands = (folder) => {
     fs.readdir("."+folder, function(err, items) {
@@ -18,6 +19,8 @@ global.CommandStore = new CommandStore();
 require("./util/Database");
 require("./util/Permissions");
 require("./util/Console");
+
+global.errorMessage = () => return errorMsgs[Math.floor(Math.random() * (errorMsgs.length-1))];
 
 Client.on("ready", () => {
     console.info("Online.");
@@ -73,15 +76,15 @@ Client.on("message", m => {
             results.forEach(result => {
                 if(m.content.toLowerCase() == result.msg) {
                     /*
-                        ${} allows you to have things that change depending on the message.
-                        ${name.user} will output the username of the author.
-                        ${name.member} will output the displayname of the author.
-                        ${name.bot} will output the name of the bot.
-                        ${permlevel} will output the permission level the author has on the bot.
-                        ${mention} will mention the author.
+                        {} allows you to have things that change depending on the message.
+                        {name.user} will output the username of the author.
+                        {name.member} will output the displayname of the author.
+                        {name.bot} will output the name of the bot.
+                        {permlevel} will output the permission level the author has on the bot.
+                        {mention} will mention the author.
                     */
                     global.getPerms(m.member).then(permlevel => {
-                        let response = result.response.replace("${name.user}",m.author.username).replace("${name.member}",m.member.displayName).replace("${name.bot}",Client.user.username).replace("${permlevel}",permIdToName[permlevel]).replace("${mention}","<@"+m.author.id+">");
+                        let response = result.response.replace("{name.user}",m.author.username).replace("{name.member}",m.member.displayName).replace("{name.bot}",Client.user.username).replace("{permlevel}",permIdToName[permlevel]).replace("{mention}","<@"+m.author.id+">");
                         
                         m.channel.send(response);
                     });
