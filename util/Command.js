@@ -1,3 +1,4 @@
+  
 module.exports = class {
     constructor() {
       this.name = "";
@@ -7,6 +8,7 @@ module.exports = class {
       this.enabled = true;
       this.usage = "";
       this.args = 0;
+      this.alias = [];
     }
     code(args,message) {
       throw "Command enabled but no code to execute!";

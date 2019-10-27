@@ -9,6 +9,7 @@ module.exports = class extends Command {
         this.permission = 2;
         this.usage = "<channel> [time length (m/h/d)] [reason]";
         this.args = 1;
+        this.alias = ["lockdown"]
     }
     code(args,m) {
         let user = null;
@@ -73,17 +74,18 @@ module.exports = class extends Command {
         // 3 = ban
         let start = Date.now().toString();
         user.send("***__Channel Locked__***\n**Staff have left the following message**\n*"+reason+"*").then(msg => {
-            db.query("INSERT INTO `channels`(`id`, `reason`, `initiator`, `duration`, `start`, `msg`, `guild`) VALUES (?,?,?,?,?,?,?)", [user.id,reason,m.author.id,time,start,msg.id,m.guild.id], function(error,results,tables) {
-                if(error) {
-                    m.reply("Database error occured. Unable to lock.");
-                    return console.error("Failed to INSERT user id "+user.id+" INTO cases TABLE: "+error);
-                }
+            queryDB("INSERT INTO `channels`(`id`, `reason`, `initiator`, `duration`, `start`, `msg`, `guild`) VALUES (?,?,?,?,?,?,?)", [user.id,reason,m.author.id,time,start,msg.id,m.guild.id]).then(results => {
                 let length = timeRaw +" "+timeMeasure;
                     if(time == 0) {
                     length = "Infinity";
                 }
                 m.reply("Locked Channel.");
                 Client.emit("modCommandExecuted", (m.content,m.member));
+            }).catch(e => { 
+                if(e.code == "NOT_CONNECTED") {msg.delete(); return "Database is not connected. Bot functionaly limited.";}
+                m.reply("Failed to execute database change. Channel is not locked");
+                msg.edit(spintax.unspin("***__Channel Unlocked Due To {Stupid Lego|Catastrophic} Error__***\n**come on lego fix your bot**\n\n*cockroach mode activated*"));
+                console.error("Failed to query database:\n	Code: "+e.code+"\n	Message: "+e.message);
             });
         });
         

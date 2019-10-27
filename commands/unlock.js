@@ -22,18 +22,23 @@ module.exports = class extends Command {
         // 2 = kick
         // 3 = ban
         let start = Date.now().toString();
-        db.query("SELECT * FROM `channels` WHERE `id`=?",[user.id], function(error,results,fields) {
-            Client.guilds.get(results[0].guild).channels.get(results[0].id).fetchMessage(results[0].msg).then(msg => {
-                db.query("DELETE FROM `channels` WHERE `id`=?",[results[0].id],function(error,results,fields) {
-                    if(error) {
-                        m.reply("Failed to unlock channel. Channel remains in LOCKED state.");
-                        return console.error("Failed to unlock channel "+result.id+": "+error);
-                    }
+        queryDB("SELECT * FROM `channels` WHERE `id`=?",[user.id]).then(results => {
+            server.channels.resolve(results[0].id).messages.fetch(results[0].msg).then(msg => {
+                queryDB("DELETE FROM `channels` WHERE `id`=?",[results[0].id]).then(results => {
                     msg.edit("***__Channel Unlocked__***\n**Channel lockdown is now over.**");
                     m.reply("Unlocked Channel");
                     Client.emit("modCommandExecuted", (m.content,m.member));
+                }).catch(e => { 
+                    if(e.code == "NOT_CONNECTED") return "Database is not connected. Bot functionaly limited.";
+                    m.reply("Failed to execute database change. At this point you should just get Lego to manually edit the database or prevent the bot from deleting messages.");
+                    msg.edit("***__Channel Unlocked__***\n***But because lego's an idiot, an error occured.***\n*cockroach mode activated*")
+                    console.error("Failed to query database:\n	Code: "+e.code+"\n	Message: "+e.message);
                 });
             });
+        }).catch(e => { 
+            if(e.code == "NOT_CONNECTED") return "Database is not connected. Bot functionaly limited.";
+            m.reply("Failed to get data from database. You know what that means.");
+            console.error("Failed to query database:\n	Code: "+e.code+"\n	Message: "+e.message);
         });
     }
 }

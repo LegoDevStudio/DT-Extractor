@@ -5,7 +5,7 @@
 const express = require('express');
 const app = express();
 var sa = require("superagent");
-var bodyParser = require'body-parser')
+var bodyParser = require('body-parser')
 var status = {"status":1,"desc":""};
 global.config = require("./config/config.json");
 var fs = require("fs");

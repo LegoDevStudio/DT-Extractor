@@ -9,6 +9,7 @@ module.exports = class extends Command {
         this.permission = 1;
         this.usage = "<user id or mention> [reason]";
         this.args = 1;
+        this.alias = ["forceleave"]
     }
     code(args,m) {
         let user = null;
@@ -33,12 +34,9 @@ module.exports = class extends Command {
         // 2 = kick
         // 3 = ban
         let start = Date.now().toString();
-        db.query("INSERT INTO `cases`(`user`, `issuer`, `type`, `reason`, `duration`, `start`, `active`) VALUES (?,?,?,?,?,?,?)", [user.id,m.author.id,2,reason,0,start,true], function(error,results,tables) {
-            if(error) {
-                m.reply("Failed to execute database change. User has not been punished.");
-                return console.error("Failed to INSERT user id "+user.id+" INTO cases TABLE: "+error);
-            }
-            db.query("SELECT `caseid` FROM `cases` WHERE `user`=? AND `start`=?", [user.id, start], function(error,results,tables) {
+        queryDB("INSERT INTO `cases`(`user`, `issuer`, `type`, `reason`, `duration`, `start`, `active`) VALUES (?,?,?,?,?,?,?)", [user.id,m.author.id,2,reason,0,start,true]).then(results => {
+
+            queryDB("SELECT `caseid` FROM `cases` WHERE `user`=? AND `start`=?", [user.id, start]).then(results => {
                 console.log(results);
                 let embed = {
                     "color": 16711683,
@@ -68,7 +66,15 @@ module.exports = class extends Command {
                 m.guild.channels.get(global.config.punishchannel).send({embed:embed});
                 m.reply("Kicked user.");
                 Client.emit("modCommandExecuted", (m.content,m.member));
+            }).catch(e => { 
+                if(e.code == "NOT_CONNECTED") return "Database is not connected. Bot functionaly limited.";
+                m.reply("Failed to execute database change. User has not been punished.");
+                console.error("Failed to query database:\n	Code: "+e.code+"\n	Message: "+e.message);
             });
+        }).catch(e => { 
+            if(e.code == "NOT_CONNECTED") return "Database is not connected. Bot functionaly limited.";
+            m.reply("Failed to execute database change. User has not been punished.");
+            console.error("Failed to query database:\n	Code: "+e.code+"\n	Message: "+e.message);
         });
     }
 }
